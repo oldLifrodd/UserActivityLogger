@@ -38,7 +38,16 @@ public static class ServiceCollectionExtensions
     /// The MVC options for chaining.
     public static MvcOptions AddUserActivityLogging(this MvcOptions options)
     {
-        options.Filters.AddService<UserActivityLoggingFilter>();
+        bool filtreVar = options.Filters
+            .OfType<ServiceFilterAttribute>()
+            .Any(filtre =>
+                filtre.ServiceType == typeof(UserActivityLoggingFilter));
+
+        if (!filtreVar)
+        {
+            options.Filters.AddService<UserActivityLoggingFilter>();
+        }
+
         return options;
-    }
+        }    
 }
