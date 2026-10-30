@@ -1,4 +1,5 @@
-﻿
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace UserActivityLogger.Extensions;
 
 public static class ServiceCollectionExtensions
@@ -24,8 +25,8 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
 
         // Register filter
-        services.AddScoped<IUserActivityLogger, UserActivityLoggerService<TContext>>();
-        services.AddScoped<UserActivityLoggingFilter>();
+        services.TryAddScoped<IUserActivityLogger, UserActivityLoggerService<TContext>>();
+        services.TryAddScoped<UserActivityLoggingFilter>();
 
         return services;
     }
