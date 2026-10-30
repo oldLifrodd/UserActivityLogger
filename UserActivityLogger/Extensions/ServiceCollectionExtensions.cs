@@ -16,6 +16,22 @@ public static class ServiceCollectionExtensions
         Action<UserActivityLoggerOptions>? configure = null)
         where TContext : DbContext
     {
+        bool optionsRegistered = services.Any(
+            service => service.ServiceType == typeof(UserActivityLoggerOptions)
+        );
+
+        if (optionsRegistered)
+        {
+            if (configure != null)
+            {
+                throw new InvalidOperationException(
+                    "UserActivityLogger is already configured."
+                );
+            }
+    
+            return services;
+        }
+        
         // Configure options
         var options = new UserActivityLoggerOptions();
         configure?.Invoke(options);
@@ -39,16 +55,16 @@ public static class ServiceCollectionExtensions
     /// The MVC options for chaining.
     public static MvcOptions AddUserActivityLogging(this MvcOptions options)
     {
-        bool filtreVar = options.Filters
+        bool filterExists = options.Filters
             .OfType<ServiceFilterAttribute>()
-            .Any(filtre =>
-                filtre.ServiceType == typeof(UserActivityLoggingFilter));
+            .Any(filter =>
+                filter.ServiceType == typeof(UserActivityLoggingFilter));
 
-        if (!filtreVar)
+        if (!filterExists)
         {
             options.Filters.AddService<UserActivityLoggingFilter>();
         }
 
         return options;
-        }    
+    }    
 }
